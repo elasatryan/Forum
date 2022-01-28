@@ -1,0 +1,28 @@
+﻿@model IEnumerable<Forum.Models.TopicViewModel>
+
+@{
+    ViewBag.Title = "Topic";
+}
+
+<h2>Topic</h2>
+
+<p>
+
+    @Html.ActionLink("Create New", "Add", "Topic")
+</p>
+<table class="table">
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            <a href="@Url.Action("Get", "Topic", new { id = item.UserId })">@item.Title</a>
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CreatedAt)
+        </td>
+        <td>
+            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
+        </td>
+    </tr>
+}
+
+</table>

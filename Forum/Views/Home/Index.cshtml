@@ -1,0 +1,40 @@
+﻿@*@using Microsoft.AspNet.Identity
+@using Forum.Models
+@using System.Security.Claims;
+
+@model Dictionary<string, object>
+@{
+    ClaimsPrincipal.Current.Identities.First().Claims.ToList();
+    List<TopicViewModel> topicViewModel = null;
+    if (Model.ContainsKey("topics"))
+    {
+        topicViewModel = (List<TopicViewModel>)Model["topics"];
+    }
+
+    ViewBag.Title = "Home Page";
+}
+
+<h2>Topics</h2>
+
+
+<table class="table">
+    @foreach (var item in topicViewModel)
+    {
+        <tr>
+            <td>
+                <a href="@Url.Action("Get", "Topic", new { id = item.Id })">@item.Title</a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedAt)
+            </td>
+            <td>
+                @if (User.IsInRole("admin"))
+                {
+                    @Html.ActionLink("Edit", "Edit", new { id = item.Id })
+                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                }
+            </td>
+        </tr>
+    }
+
+</table>*@
