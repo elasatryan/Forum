@@ -1,27 +1,39 @@
-﻿@model IEnumerable<Forum.Models.TopicViewModel>
+﻿@using Forum.Data
+
+@model IEnumerable<Forum.Models.TopicViewModel>
 
 @{
     ViewBag.Title = "Topic";
 }
 
-<h2>Topic</h2>
+<h2>Topics</h2>
 
 <p>
-
-    @Html.ActionLink("Create New", "Add", "Topic")
+    @if(User.Identity.IsAuthenticated)
+    {                
+    }
+     @if (User.IsInRole(Defines.Role_Admin))
+     {
+        @Html.ActionLink("Create New", "AddEdit", "Topic")
+     }
 </p>
 <table class="table">
 @foreach (var item in Model) {
     <tr>
         <td>
-            <a href="@Url.Action("Get", "Topic", new { id = item.UserId })">@item.Title</a>
+            <a href="@Url.Action("Index", "Thread", new { topicId = item.Id })">@item.Title</a>
         </td>
+        <td></td>
+        <td></td>
         <td>
-            @Html.DisplayFor(modelItem => item.CreatedAt)
+            @Html.ActionLink("Delete", "Delete", new { id = item.Id })
         </td>
+        @if (User.IsInRole(Defines.Role_Admin))
+        {
         <td>
-            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
+            @Html.ActionLink("Edit", "AddEdit", new { id = item.Id })
         </td>
+        }
     </tr>
 }
 

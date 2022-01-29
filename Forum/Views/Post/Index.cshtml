@@ -1,0 +1,53 @@
+﻿@using Forum.Models;
+@using Microsoft.AspNet.Identity;
+
+@model IEnumerable<PostViewModel>
+@Scripts.Render("~/bundles/jquery")
+
+@{
+    ViewBag.Title = "Index"; 
+}
+
+<h2>@ViewBag.ThreadTitle</h2>
+
+@if (Model == null && Model.Count() == 0)
+{
+    <p> No posts yet </p>
+} 
+<table class="table">
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Body)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+            </td>
+        </tr>
+
+    }
+    @if (User.Identity.IsAuthenticated && !ViewBag.Inactive) {
+    <tr>
+        <td>
+            <textarea name="Body"></textarea>
+            <button type="button" id="Post">Reply</button>
+        </td>
+    </tr>
+    }
+</table>
+
+<script>
+jQuery("#Post").click(function () {
+    jQuery.ajax({
+        url: '@Url.Action("Post", "Post")',
+        data: { Body: jQuery('[name=Body]').val(), UserId: '@User.Identity.GetUserId()', ThreadId: '@ViewBag.ThreadId' },
+        method: 'POST',
+        success: function (response) {
+            console.log(response);
+        }
+    })
+});
+</script>

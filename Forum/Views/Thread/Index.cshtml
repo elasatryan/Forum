@@ -1,0 +1,46 @@
+﻿@using Forum.Data
+@using Forum.Models
+
+@model IEnumerable<Forum.Models.ThreadViewModel>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Topic @ViewBag.TopicTitle - Threads</h2>
+
+@if (Model == null && Model.Count() == 0)
+{
+    <p>No Threads Yet</p>
+    <p>
+        @Html.ActionLink("Create New", "AddEdit", new { id = "", topicId = ViewBag.TopicId })
+    </p>
+}
+else
+{
+
+    <p>
+        @Html.ActionLink("Create New", "AddEdit", new { id = "", topicId = ViewBag.TopicId })
+    </p>
+    <table class="table">
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <a href="@Url.Action("Index", "Post", new { threadId = item.Id })">@item.Title</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @if (User.IsInRole(Defines.Role_Admin))
+                    {
+                        @Html.ActionLink("Edit", "AddEdit", new { id = item.Id, topicId = item.TopicId })
+                    }
+                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                </td>
+            </tr>
+
+        }
+    </table>
+}

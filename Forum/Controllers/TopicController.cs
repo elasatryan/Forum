@@ -10,6 +10,7 @@ using Forum.Data;
 using Forum.Entities;
 using Forum.Models;
 using Forum.Services;
+using System.Net;
 
 namespace Forum.Controllers
 {
@@ -22,44 +23,54 @@ namespace Forum.Controllers
             _topicService = new TopicService();
         }
 
-        // GET: Topic
         public ActionResult Topic()
         {
             List<Topic> topics = _topicService.GetTopics();
             List<TopicViewModel> topicViews = new List<TopicViewModel>();
-            //todo: use automapper
+            //or use automapper but in this case properties are not many
             topicViews.AddRange(topics.Select(h => new TopicViewModel { Id = h.Id, UserId=h.UserId, Title = h.Title }));
             return View(topicViews);
         }
 
         [HttpGet]
-        public ActionResult Get(string id)
+        [Authorize(Roles = Defines.Role_Admin)]
+        public ActionResult AddEdit(string id)
         {
-            return View("_topic", _topicService.GetTopic(id));
-        }
+            TopicViewModel topicViewModel = null;
+            if (id == null || id == "")
+            {
+                topicViewModel = new TopicViewModel();
+                topicViewModel.UserId = User.Identity.GetUserId();
+            }
+            else
+            {
+                topicViewModel = _topicService.GetTopic(id);
+            }
 
-        [HttpGet]
-        public ActionResult Add()
-        {
-            Topic topicViewModel = new Topic();
-            topicViewModel.UserId = User.Identity.GetUserId();
-
-            return View("_add", topicViewModel);
+            return View("_addEdit", topicViewModel);
         }
 
         [HttpPost]
         public ActionResult Save(TopicViewModel topic)
         {
-            _topicService.Save(topic);
-
-            return RedirectToAction("Topic");
+            if (ModelState.IsValid)
+            {
+                if (_topicService.Save(topic))
+                {
+                    return RedirectToAction("Topic");
+                }
+            }
+            return View("_addEdit", topic);
         }
 
         [HttpGet]
+        [Authorize(Roles = Defines.Role_Admin)]
         public ActionResult Delete(string id)
         {
-            _topicService.Delete(id);
-
+            if (!ModelState.IsValid)
+            {
+                _topicService.Delete(id);
+            }
             return RedirectToAction("Topic");
         }
     }

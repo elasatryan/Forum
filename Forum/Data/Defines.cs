@@ -21,5 +21,8 @@ namespace Forum.Data
             }
         }
         public static ApplicationUser CurrentAppManager { get; set; }
+
+        public const string Role_Admin = "admin";
+        public const string Role_User = "user";
     }
 }

@@ -7,6 +7,8 @@ namespace Forum.Entities
     {
         public string UserId { get; set; }
 
+        public string ThreadId { get; set; }
+
         public string Body { get; set; }
     }
 }

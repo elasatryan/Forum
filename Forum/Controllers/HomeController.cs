@@ -16,8 +16,7 @@ namespace Forum.Controllers
         //    mainObjects.Add("topics", topicContext.Topics.ToList());
         //    return View(mainObjects);
         //}
-
-        [Authorize(Roles = "admin")]
+        
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";

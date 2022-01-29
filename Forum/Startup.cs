@@ -1,4 +1,5 @@
-﻿using Forum.Models;
+﻿using Forum.Data;
+using Forum.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin;
@@ -17,14 +18,14 @@ namespace Forum
 
         private void CreateRoles()
         {
-            ForumContext context = new ForumContext();
+            ForumContext context = ForumContext.Create();
 
             var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
 
             if (!roleManager.RoleExists("admin"))
             {
                 var role = new Microsoft.AspNet.Identity.EntityFramework.IdentityRole();
-                role.Name = "admin";
+                role.Name = Defines.Role_Admin;
                 roleManager.Create(role);
             }
 
