@@ -20,6 +20,12 @@ namespace Forum.Models
 
         public string Nickname { get; set; }
 
+        public bool IsCurrentThreadInactive { get; set; }
+
+        public UserInfo UserInfo { get; set; }
+
+        public DateTime? LastPostDate { get; set; }
+
         public DateTime CreatedAt { get; set; }
 
         public DateTime UpdatedAt { get; set; }

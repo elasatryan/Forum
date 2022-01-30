@@ -1,0 +1,53 @@
+﻿@model Forum.Models.PostViewModel
+
+@{
+    ViewBag.Title = "_edit";
+}
+
+<h2>Post</h2>
+
+<div>
+    <label>Re: @Model.ThreadTitle</label>
+
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.UserInfo.Nickname)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserInfo.Nickname)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.UserInfo.City)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserInfo.City)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.UserInfo.Country)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserInfo.Country)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UserInfo.CreatedAt)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserInfo.CreatedAt)
+        </dd>
+    </dl>
+
+    <div>
+        <label>Post: </post>
+            <div>@Model.Body</div>
+        </div>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index", new { threadId = Model.ThreadId })
+</p>

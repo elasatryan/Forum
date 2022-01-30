@@ -14,6 +14,7 @@ namespace Forum.Services
         #region private members
 
         private ForumContext _forumContext = null;
+        private PostService _postService = null;
 
         #endregion private members
 
@@ -22,6 +23,7 @@ namespace Forum.Services
         public ThreadService()
         {
             _forumContext = ForumContext.Create();
+            _postService = new PostService();
         }
 
         public List<ThreadViewModel> GetThreadsByTopicId(string topicId)
@@ -53,7 +55,9 @@ namespace Forum.Services
                             Title = reader["Title"].ToString(),
                             Inactive = (bool)reader["Inactive"],
                             Description = reader["Description"].ToString(),
-                            TopicTitle = DBNull.Value == reader["TopicTitle"] ? "" : reader["TopicTitle"].ToString() //it could bring an error 
+                            TopicTitle = DBNull.Value == reader["TopicTitle"] ? "" : reader["TopicTitle"].ToString(), //it could bring an error 
+                            LastPost = _postService.GetThreadsLastPostInfoById(reader["Id"].ToString()),
+                            PostCount = _postService.GetPostsCountByThreadId(reader["Id"].ToString())
                         });
                     }
 
@@ -90,6 +94,7 @@ namespace Forum.Services
                         threadViewModel.UserId = reader["UserId"].ToString();
                         threadViewModel.TopicId = reader["TopicId"].ToString();
                         threadViewModel.Title = reader["Title"].ToString();
+                        threadViewModel.Inactive = (bool)reader["Inactive"];
                         threadViewModel.Description = reader["Description"].ToString();
                     }
 
@@ -170,7 +175,8 @@ namespace Forum.Services
             {
                 using (SqlConnection connection = new SqlConnection(Defines.DefaultConnection))
                 {
-                    SqlCommand command = new SqlCommand($"UPDATE Threads SET DeletedAt = @DateTimeNow WHERE Id = @Id", connection);
+                    SqlCommand command = new SqlCommand($@"UPDATE Threads SET DeletedAt = @DateTimeNow WHERE Id = @Id
+                                                            UPDATE Posts SET DeletedAt = @DateTimeNow WHERE ThreadId = @Id", connection);
 
                     command.Parameters.AddWithValue("DateTimeNow", DateTime.Now);
                     command.Parameters.AddWithValue("Id", id);
@@ -189,7 +195,7 @@ namespace Forum.Services
         }
 
 
-        //change
+        //todo: change
         public static ThreadViewModel GetThreadInfoById(string threadId)
         {
             ThreadViewModel threadViewModel = new ThreadViewModel();
@@ -197,7 +203,7 @@ namespace Forum.Services
             {
                 using (SqlConnection connection = new SqlConnection(Defines.DefaultConnection))
                 {
-                    SqlCommand command = new SqlCommand($@"SELECT Threads.Title
+                    SqlCommand command = new SqlCommand($@"SELECT Threads.Title, Threads.Inactive, Threads.Description
                                                         FROM Threads 
                                                         WHERE Id = @Id AND DeletedAt IS NULL", connection);
                     command.Parameters.AddWithValue("Id", threadId);
@@ -210,6 +216,7 @@ namespace Forum.Services
                     {
                         threadViewModel.Title = reader["Title"].ToString();
                         threadViewModel.Inactive = (bool)reader["Inactive"];
+                        threadViewModel.Description = reader["Description"].ToString();
                     }
 
                     connection.Close();
@@ -224,7 +231,7 @@ namespace Forum.Services
 
             return threadViewModel;
         }
-
+       
         #endregion public members
     }
 }

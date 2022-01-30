@@ -8,18 +8,18 @@ using System.Web.SessionState;
 
 namespace Forum.Data
 {
-    public class Defines
+    public static class Defines
     {
+        static Defines()
+        {
+            DefaultConnection = WebConfigurationManager.ConnectionStrings[KEY_DefaultConnection].ConnectionString;
+        }
+
         public const string KEY_CurrentAppManager = "CU";
         public const string KEY_DefaultConnection = "DefaultConnection";
 
-        public static string DefaultConnection
-        {
-            get
-            {
-                return WebConfigurationManager.ConnectionStrings[KEY_DefaultConnection].ConnectionString;
-            }
-        }
+        public static string DefaultConnection { get; set; }
+
         public static ApplicationUser CurrentAppManager { get; set; }
 
         public const string Role_Admin = "admin";

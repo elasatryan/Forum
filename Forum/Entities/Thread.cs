@@ -17,5 +17,7 @@ namespace Forum.Entities
         public bool Inactive { get; set; }
 
         public List<Post> Posts { get; set; }
+
+        public Topic Topic { get; set; }
     }
 }

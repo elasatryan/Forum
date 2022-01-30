@@ -28,17 +28,35 @@ else
             <tr>
                 <td>
                     <a href="@Url.Action("Index", "Post", new { threadId = item.Id })">@item.Title</a>
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Description)
-                </td>
-                <td>
-                    @if (User.IsInRole(Defines.Role_Admin))
+                    @if (item.Inactive)
                     {
-                        @Html.ActionLink("Edit", "AddEdit", new { id = item.Id, topicId = item.TopicId })
+                        <span>[Closed]</span>
                     }
-                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })
                 </td>
+                @if (item.PostCount > 0)
+                {
+                    <td>
+                        Last Posted on: @item.LastPost.CreatedAt
+                    </td>
+                    <td>
+                        Replies: @item.PostCount
+
+                    </td>
+                }
+                else
+                {
+                    <td>No posts yet</td>
+                }
+
+                @if (User.Identity.IsAuthenticated && User.IsInRole(Defines.Role_Admin))
+                {
+                    <td>
+                        @Html.ActionLink("Edit", "AddEdit", new { id = item.Id, topicId = item.TopicId })
+                    </td>
+                    <td>
+                        @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                    </td>
+                }
             </tr>
 
         }

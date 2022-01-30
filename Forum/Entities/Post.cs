@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Forum.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Forum.Entities
 {
@@ -10,5 +11,10 @@ namespace Forum.Entities
         public string ThreadId { get; set; }
 
         public string Body { get; set; }
+
+        public Thread Thread { get; set; }
+
+        public ApplicationUser User { get; set; }
+
     }
 }

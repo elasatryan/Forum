@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Data.Entity;
 using System.Web;
 
 namespace Forum.Services
@@ -14,6 +15,7 @@ namespace Forum.Services
         #region private members
 
         private ForumContext _forumContext = null;
+        private PostService _postService = null;
 
         #endregion private members
 
@@ -22,11 +24,26 @@ namespace Forum.Services
         public TopicService()
         {
             _forumContext = ForumContext.Create();
+            _postService = new PostService();
         }
 
-        public List<Topic> GetTopics()
+        public List<TopicViewModel> GetTopics()
         {
-            return _forumContext.Topics.Where(t => !t.DeletedAt.HasValue).ToList();
+            List<TopicViewModel> topicViewModels = new List<TopicViewModel>();
+            List<Post> posts = new List<Post>();
+
+            var topics = _forumContext.Topics.Include("Threads.Posts").Where(k => !k.DeletedAt.HasValue).ToList();
+
+            topicViewModels.AddRange(topics.Select(h => new TopicViewModel
+            {
+                Id = h.Id,
+                UserId = h.UserId,
+                Title = h.Title,
+                LastPost = GetLatestPost(h.Id),
+                PostCount = _postService.GetPostsCountByTopicId(h.Id)
+            }));
+
+            return topicViewModels;
         }
 
         public TopicViewModel GetTopic(string id)
@@ -34,6 +51,8 @@ namespace Forum.Services
             TopicViewModel topicViewModel = new TopicViewModel();
             try
             {
+
+
                 using (SqlConnection connection = new SqlConnection(Defines.DefaultConnection))
                 {
                     SqlCommand command = new SqlCommand($@"SELECT *
@@ -72,7 +91,7 @@ namespace Forum.Services
             {
                 using (SqlConnection connection = new SqlConnection(Defines.DefaultConnection))
                 {
-                    if (topicViewModel.Id == null && topicViewModel.Id == "")
+                    if (topicViewModel.Id == null || topicViewModel.Id == "")
                     {
                         SqlCommand command = new SqlCommand(@"INSERT INTO 
                                                                 Topics(Id, UserId, Title, CreatedAt, UpdatedAt) 
@@ -121,10 +140,10 @@ namespace Forum.Services
             {
                 using (SqlConnection connection = new SqlConnection(Defines.DefaultConnection))
                 {
-                    SqlCommand command = new SqlCommand($"UPDATE Topics SET DeletedAt = @DateTimeNow WHERE Id = @Id", connection);
+                    SqlCommand command = new SqlCommand($@"DeleteTopic", connection);
+                    command.CommandType = System.Data.CommandType.StoredProcedure;
 
-                    command.Parameters.AddWithValue("DeletedAt", DateTime.Now);
-                    command.Parameters.AddWithValue("Id", id);
+                    command.Parameters.AddWithValue("TopicId", id);
 
                     connection.Open();
                     result = command.ExecuteNonQuery() > 0;
@@ -138,17 +157,6 @@ namespace Forum.Services
             }
 
             return result;
-        }
-
-        public List<PostViewModel> GetAllPostsByUserId(string userId)
-        {
-            //todo: implement
-            throw new NotImplementedException();
-        }
-
-        public int GetPostsCountByUserId(string userId)
-        {
-            throw new NotImplementedException();
         }
 
         public static string GetTopicTitleById(string topicId)
@@ -183,6 +191,33 @@ namespace Forum.Services
             }
 
             return threadTitle;
+        }
+
+        public Topic GetTopicById(string topicId)
+        {
+            return _forumContext.Topics.Where(h => h.Id == topicId && !h.DeletedAt.HasValue).Include("Threads.Posts").Where(k => !k.DeletedAt.HasValue).First();
+        }
+
+        public PostViewModel GetLatestPost(string topicId)
+        {
+            var threads = GetTopicById(topicId).Threads;
+
+            foreach (var item in threads)
+            {
+                var lastPost = item.Posts.OrderByDescending(c => c.CreatedAt).FirstOrDefault();
+
+                if (lastPost != null)
+                {
+                    return new PostViewModel
+                    {
+                        Id = lastPost.Id,
+                        Body = lastPost.Body,
+                        CreatedAt = lastPost.CreatedAt,
+                    };
+                }
+            }
+
+            return new PostViewModel();
         }
 
         #endregion public members

@@ -22,9 +22,13 @@ namespace Forum.Models
 
         public bool Inactive { get; set; }
 
-        public string Nickname { get; set; }
+        public string LastPostedUserNickname { get; set; }
 
         public string TopicTitle { get; set; }
+
+        public PostViewModel LastPost { get; set; }
+
+        public int PostCount { get; set; }
 
         public DateTime CreatedAt { get; set; }
 

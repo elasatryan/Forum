@@ -141,4 +141,16 @@ namespace Forum.Models
         [Display(Name = "Email")]
         public string Email { get; set; }
     }
+
+    public class UserInfo
+    {
+        public string Nickname { get; set; }
+
+        public string City { get; set; }
+
+        public string Country { get; set; }
+
+        [Display(Name = "Joined Date")]
+        public DateTime CreatedAt { get; set; }
+    }
 }

@@ -25,11 +25,9 @@ namespace Forum.Controllers
 
         public ActionResult Topic()
         {
-            List<Topic> topics = _topicService.GetTopics();
-            List<TopicViewModel> topicViews = new List<TopicViewModel>();
-            //or use automapper but in this case properties are not many
-            topicViews.AddRange(topics.Select(h => new TopicViewModel { Id = h.Id, UserId=h.UserId, Title = h.Title }));
-            return View(topicViews);
+            List<TopicViewModel> topics = _topicService.GetTopics();
+
+            return View(topics);
         }
 
         [HttpGet]
@@ -37,6 +35,7 @@ namespace Forum.Controllers
         public ActionResult AddEdit(string id)
         {
             TopicViewModel topicViewModel = null;
+
             if (id == null || id == "")
             {
                 topicViewModel = new TopicViewModel();
@@ -51,26 +50,33 @@ namespace Forum.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public ActionResult Save(TopicViewModel topic)
         {
             if (ModelState.IsValid)
             {
-                if (_topicService.Save(topic))
+                if (!_topicService.Save(topic))
                 {
-                    return RedirectToAction("Topic");
+                    return View("~/Views/Shared/Error.cshtml");
                 }
             }
-            return View("_addEdit", topic);
+
+            return RedirectToAction("Topic");
         }
 
         [HttpGet]
+        [Authorize]
         [Authorize(Roles = Defines.Role_Admin)]
         public ActionResult Delete(string id)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                _topicService.Delete(id);
+                if (!_topicService.Delete(id))
+                {
+                    return View("~/Views/Shared/Error.cshtml");
+                }
             }
+
             return RedirectToAction("Topic");
         }
     }

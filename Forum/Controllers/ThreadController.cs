@@ -45,6 +45,7 @@ namespace Forum.Controllers
             return View(threads);
         }
 
+        [Authorize]
         [Authorize(Roles = Defines.Role_Admin)]
         public ActionResult AddEdit(string id, string topicId)
         {
@@ -66,27 +67,36 @@ namespace Forum.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         [Authorize(Roles = Defines.Role_Admin)]
         public ActionResult Save(ThreadViewModel thread)
         {
             if (ModelState.IsValid)
             {
-                _threadService.Save(thread);
+                if (!_threadService.Save(thread))
+                {
+                    return View("~/Views/Shared/Error.cshtml");
+                }
 
-                return RedirectToAction("Index", "Post", new { threadId = thread.Id });
+                return RedirectToAction("Index", "Thread", new { threadId = thread.TopicId });
             }
 
             return View("_addEdit", thread);
         }
 
         [HttpGet]
+        [Authorize]
         [Authorize(Roles = Defines.Role_Admin)]
         public ActionResult Delete(string id)
         {
             if (ModelState.IsValid)
             {
-                _threadService.Delete(id);
+                if (!_threadService.Delete(id))
+                {
+                    return View("~/Views/Shared/Error.cshtml");
+                }
             }
+
             return RedirectToAction("Index");
         }
     }

@@ -265,6 +265,8 @@
     <Content Include="Views\Thread\Index.cshtml" />
     <Content Include="Views\Thread\_addEdit.cshtml" />
     <Content Include="Views\Post\Index.cshtml" />
+    <Content Include="Views\Post\_editView.cshtml" />
+    <Content Include="Views\Post\_edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

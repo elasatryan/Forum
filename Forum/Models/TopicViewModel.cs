@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Forum.Entities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -19,12 +20,14 @@ namespace Forum.Models
 
         public string Nickname { get; set; }
 
-        public DateTime? LastPost { get; set; }
+        public int PostCount { get; set; }
 
         public DateTime CreatedAt { get; set; }
 
         public DateTime UpdatedAt { get; set; }
 
         public DateTime? DeletedAt { get; set; }
+
+        public PostViewModel LastPost { get; set; }
     }
 }

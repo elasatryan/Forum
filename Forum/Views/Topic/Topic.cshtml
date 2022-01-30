@@ -9,32 +9,38 @@
 <h2>Topics</h2>
 
 <p>
-    @if(User.Identity.IsAuthenticated)
-    {                
+    @if (User.Identity.IsAuthenticated)
+    {
     }
-     @if (User.IsInRole(Defines.Role_Admin))
-     {
+    @if (User.IsInRole(Defines.Role_Admin))
+    {
         @Html.ActionLink("Create New", "AddEdit", "Topic")
-     }
+    }
 </p>
 <table class="table">
-@foreach (var item in Model) {
+    @foreach (var item in Model)
+    {
     <tr>
         <td>
             <a href="@Url.Action("Index", "Thread", new { topicId = item.Id })">@item.Title</a>
         </td>
+        <td>Last post: @item.LastPost.Body</td>
+        <td>Posted at : @item.LastPost.CreatedAt</td>
+        <td>Total Reples Count: @item.PostCount</td>
         <td></td>
-        <td></td>
-        <td>
-            @Html.ActionLink("Delete", "Delete", new { id = item.Id })
-        </td>
-        @if (User.IsInRole(Defines.Role_Admin))
+        @if (User.IsInRole(Defines.Role_Admin) && User.Identity.IsAuthenticated)
         {
-        <td>
-            @Html.ActionLink("Edit", "AddEdit", new { id = item.Id })
-        </td>
+            <td>
+                @Html.ActionLink("Edit", "AddEdit", new { id = item.Id })
+            </td>
+        }
+        @if (User.Identity.IsAuthenticated)
+        {
+            <td>
+                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+            </td>
         }
     </tr>
-}
+    }
 
 </table>

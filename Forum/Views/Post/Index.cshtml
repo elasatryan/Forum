@@ -5,37 +5,45 @@
 @Scripts.Render("~/bundles/jquery")
 
 @{
-    ViewBag.Title = "Index"; 
+    ViewBag.Title = "Index";
 }
 
 <h2>@ViewBag.ThreadTitle</h2>
+<h3>@ViewBag.Description</h3>
 
 @if (Model == null && Model.Count() == 0)
 {
     <p> No posts yet </p>
-} 
+}
 <table class="table">
     @foreach (var item in Model)
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Body)
+                <span>[@item.Nickname]</span> <a href="@Url.Action("ViewPost", "Post", new { id = item.Id })">@item.Body</a>
             </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
-            </td>
+
+            @if (item.UserId == User.Identity.GetUserId() || User.IsInRole("admin"))
+            {
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.Id })
+                </td>
+                <td>
+                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                </td>
+            }
+
         </tr>
 
     }
-    @if (User.Identity.IsAuthenticated && !ViewBag.Inactive) {
-    <tr>
-        <td>
-            <textarea name="Body"></textarea>
-            <button type="button" id="Post">Reply</button>
-        </td>
-    </tr>
+    @if (User.Identity.IsAuthenticated && !ViewBag.Inactive)
+    {
+        <tr>
+            <td>
+                <textarea name="Body"></textarea>
+                <button type="button" id="Post">Reply</button>
+            </td>
+        </tr>
     }
 </table>
 
@@ -46,7 +54,9 @@ jQuery("#Post").click(function () {
         data: { Body: jQuery('[name=Body]').val(), UserId: '@User.Identity.GetUserId()', ThreadId: '@ViewBag.ThreadId' },
         method: 'POST',
         success: function (response) {
-            console.log(response);
+            location.reload(true);
+        },
+        failed: function () {
         }
     })
 });
